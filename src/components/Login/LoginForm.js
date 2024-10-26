@@ -9,7 +9,7 @@ import {
   Alert,
 } from "@mui/material";
 import axios from "axios";
-import { useNavigate, Link } from "react-router-dom"; // Import Link for routing
+import { useNavigate, Link } from "react-router-dom";
 import GitHubIcon from "@mui/icons-material/GitHub";
 
 const LoginForm = () => {
