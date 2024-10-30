@@ -28,7 +28,7 @@ const LoginForm = () => {
           password,
         }
       );
-      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("authToken", response.data.token); // Use camel case for the token
       navigate("/dashboard"); // Redirect after successful login
     } catch (error) {
       if (error.response && error.response.data) {
