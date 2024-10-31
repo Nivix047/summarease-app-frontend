@@ -10,7 +10,6 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-import GitHubIcon from "@mui/icons-material/GitHub";
 
 const LoginForm = () => {
   const [username, setUsername] = useState("");
@@ -95,22 +94,6 @@ const LoginForm = () => {
         </form>
 
         <Divider sx={{ my: 2 }} />
-
-        <Typography variant="body1" align="center">
-          or log in with
-        </Typography>
-
-        {/* GitHub icon button for OAuth */}
-        <Box display="flex" justifyContent="center" sx={{ mt: 2 }}>
-          <Button
-            variant="outlined"
-            startIcon={<GitHubIcon />}
-            href="http://localhost:8000/auth/login/github/"
-            fullWidth
-          >
-            GitHub
-          </Button>
-        </Box>
 
         <Typography variant="body2" align="center" sx={{ mt: 2 }}>
           Don’t have an account?{" "}
