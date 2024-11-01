@@ -84,6 +84,15 @@ const DashboardForm = () => {
         );
 
         if (uploadResponse.ok) {
+          const uploadResult = await uploadResponse.json();
+          console.log("Uploaded PDF response:", uploadResult);
+
+          if (uploadResult.user) {
+            console.log("User ID:", uploadResult.user);
+            console.log("PDF Title:", uploadResult.title);
+          } else {
+            console.log("User ID not found in response.");
+          }
           setSnackbarMessage("PDF uploaded and summarized successfully!");
         } else {
           const error = await uploadResponse.json();
