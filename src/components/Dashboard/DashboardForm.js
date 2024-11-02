@@ -87,6 +87,9 @@ const DashboardForm = () => {
           const uploadResult = await uploadResponse.json();
           console.log("Uploaded PDF response:", uploadResult);
 
+          const cloudinaryURL = `https://res.cloudinary.com/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload/${uploadResult.public_id}.pdf`;
+          console.log("Cloudinary URL for the PDF:", cloudinaryURL);
+
           if (uploadResult.user) {
             console.log("User ID:", uploadResult.user);
             console.log("PDF Title:", uploadResult.title);
