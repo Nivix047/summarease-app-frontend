@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Box,
   Container,
@@ -18,6 +18,7 @@ const DashboardForm = () => {
   const [pdfFile, setPdfFile] = useState(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [uploadedPDFs, setUploadedPDFs] = useState([]);
   const fileInputRef = useRef(null); // Reference for the file input
 
   const handleDrop = (e) => {
@@ -32,6 +33,44 @@ const DashboardForm = () => {
     const file = e.target.files[0];
     if (file) {
       setPdfFile(file);
+    }
+  };
+
+  useEffect(() => {
+    fetchUploadedPDFs(); // Fetch PDFs when the component mounts
+  }, []);
+
+  const fetchUploadedPDFs = async () => {
+    const authToken = localStorage.getItem("authToken");
+    let userId = localStorage.getItem("userId"); // Ensure userId is stored on login
+
+    console.log("Auth Token:", authToken);
+    console.log("User ID:", userId);
+    console.log("Type of user ID:", typeof userId);
+    if (!authToken || !userId) {
+      console.error("User not logged in or auth token missing");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/v1/users/${userId}/user_info/`,
+        {
+          headers: {
+            Authorization: `Token ${authToken}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setUploadedPDFs(data.pdf_documents);
+        console.log("Fetched PDF Documents:", data.pdf_documents);
+      } else {
+        console.error("Failed to fetch uploaded PDFs", response);
+      }
+    } catch (error) {
+      console.error("Error fetching uploaded PDFs:", error);
     }
   };
 
@@ -172,6 +211,36 @@ const DashboardForm = () => {
             Submit
           </Button>
         </form>
+        {uploadedPDFs.length > 0 && (
+          <Box sx={{ mt: 4 }}>
+            <Typography variant="h6">Your Uploaded PDFs:</Typography>
+            {uploadedPDFs.map((pdf) => {
+              // Construct Cloudinary URL using public_id
+              const fileUrl = `https://res.cloudinary.com/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload/${pdf.public_id}.pdf`;
+
+              return (
+                <Box key={pdf.id} sx={{ mb: 2 }}>
+                  <Typography variant="body1">Title: {pdf.title}</Typography>
+                  <Typography variant="body1">
+                    Date: {new Date(pdf.created_at).toLocaleDateString()}
+                  </Typography>
+                  <a
+                    href={fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: "inline-block",
+                      color: "#1976d2",
+                      textDecoration: "underline",
+                    }}
+                  >
+                    View PDF
+                  </a>
+                </Box>
+              );
+            })}
+          </Box>
+        )}
         <Snackbar
           open={openSnackbar}
           autoHideDuration={6000}
