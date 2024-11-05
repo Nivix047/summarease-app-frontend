@@ -21,7 +21,8 @@ const DashboardForm = () => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [uploadedPDFs, setUploadedPDFs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const fileInputRef = useRef(null); // Reference for the file input
+
+  const fileInputRef = useRef(null);
 
   const handleDrop = (e) => {
     e.preventDefault();
@@ -128,17 +129,10 @@ const DashboardForm = () => {
 
         if (uploadResponse.ok) {
           const uploadResult = await uploadResponse.json();
-          console.log("Uploaded PDF response:", uploadResult);
 
-          const cloudinaryURL = `https://res.cloudinary.com/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload/${uploadResult.public_id}.pdf`;
-          console.log("Cloudinary URL for the PDF:", cloudinaryURL);
+          // Update uploadedPDFs to include the new PDF without refreshing
+          setUploadedPDFs((prevPDFs) => [...prevPDFs, uploadResult]);
 
-          if (uploadResult.user) {
-            console.log("User ID:", uploadResult.user);
-            console.log("PDF Title:", uploadResult.title);
-          } else {
-            console.log("User ID not found in response.");
-          }
           setSnackbarMessage("PDF uploaded and summarized successfully!");
         } else {
           const error = await uploadResponse.json();
