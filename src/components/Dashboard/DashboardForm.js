@@ -6,6 +6,7 @@ import {
   Button,
   TextField,
   Snackbar,
+  CircularProgress,
 } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 
@@ -19,6 +20,7 @@ const DashboardForm = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [uploadedPDFs, setUploadedPDFs] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef(null); // Reference for the file input
 
   const handleDrop = (e) => {
@@ -42,7 +44,7 @@ const DashboardForm = () => {
 
   const fetchUploadedPDFs = async () => {
     const authToken = localStorage.getItem("authToken");
-    let userId = localStorage.getItem("userId"); // Ensure userId is stored on login
+    let userId = localStorage.getItem("userId");
 
     console.log("Auth Token:", authToken);
     console.log("User ID:", userId);
@@ -82,11 +84,13 @@ const DashboardForm = () => {
       return;
     }
 
+    setIsLoading(true);
+
     const formData = new FormData();
     formData.append("file", pdfFile);
     formData.append(
       "upload_preset",
-      process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET // Unsigned preset
+      process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET
     );
 
     try {
@@ -103,21 +107,21 @@ const DashboardForm = () => {
         const result = await response.json();
         console.log("Upload successful:", result);
 
-        const authToken = localStorage.getItem("authToken"); // Retrieve the token
-        console.log("Auth Token:", authToken); // Log the token for debugging
+        const authToken = localStorage.getItem("authToken");
+        console.log("Auth Token:", authToken);
 
         const uploadResponse = await fetch(
           "http://localhost:8000/api/v1/users/pdfs/",
           {
             method: "POST",
             headers: {
-              Authorization: `Token ${authToken}`, // Use the retrieved token
+              Authorization: `Token ${authToken}`,
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
               title: title,
-              public_id: result.public_id, // Use public_id after upload
-              file_url: result.secure_url, // Use secure_url after upload
+              public_id: result.public_id,
+              file_url: result.secure_url,
             }),
           }
         );
@@ -155,6 +159,7 @@ const DashboardForm = () => {
       setOpenSnackbar(true);
       setTitle("");
       setPdfFile(null);
+      setIsLoading(false);
     }
   };
 
@@ -207,8 +212,15 @@ const DashboardForm = () => {
               </Button>
             </label>
           </Box>
-          <Button type="submit" variant="contained" color="primary">
-            Submit
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            disabled={isLoading}
+            startIcon={isLoading ? <CircularProgress size={20} /> : null}
+          >
+            {isLoading ? "Uploading..." : "Submit"}{" "}
+            {/* Toggle between "Uploading..." and "Submit" */}
           </Button>
         </form>
         {uploadedPDFs.length > 0 && (
