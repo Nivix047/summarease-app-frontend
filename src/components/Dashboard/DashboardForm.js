@@ -7,8 +7,10 @@ import {
   TextField,
   Snackbar,
   CircularProgress,
+  Divider,
 } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 
 const Alert = React.forwardRef((props, ref) => (
   <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
@@ -219,29 +221,41 @@ const DashboardForm = () => {
         </form>
         {uploadedPDFs.length > 0 && (
           <Box sx={{ mt: 4 }}>
-            <Typography variant="h6">Your Uploaded PDFs:</Typography>
+            {/* <Typography variant="h6">Your Uploaded PDFs:</Typography> */}
             {uploadedPDFs.map((pdf) => {
               // Construct Cloudinary URL using public_id
               const fileUrl = `https://res.cloudinary.com/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload/${pdf.public_id}.pdf`;
 
               return (
                 <Box key={pdf.id} sx={{ mb: 2 }}>
-                  <Typography variant="body1">Title: {pdf.title}</Typography>
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <Typography
+                      variant="body1"
+                      sx={{ fontWeight: "bold", mr: 1 }}
+                    >
+                      <strong>Title: </strong>
+                      {pdf.title}
+                    </Typography>
+                    <a
+                      href={fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        color: "#1976d2",
+                      }}
+                    >
+                      <PictureAsPdfIcon fontSize="large" />
+                    </a>
+                  </Box>
+
                   <Typography variant="body1">
-                    Date: {new Date(pdf.created_at).toLocaleDateString()}
+                    <strong>Date: </strong>
+                    {new Date(pdf.created_at).toLocaleDateString()}
                   </Typography>
-                  <a
-                    href={fileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      display: "inline-block",
-                      color: "#1976d2",
-                      textDecoration: "underline",
-                    }}
-                  >
-                    View PDF
-                  </a>
+                  <Typography variant="body1">
+                    <strong>Summary:</strong> {pdf.summary}
+                  </Typography>
+                  <Divider sx={{ my: 2 }} />
                 </Box>
               );
             })}
