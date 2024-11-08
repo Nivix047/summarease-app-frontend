@@ -69,8 +69,11 @@ const DashboardForm = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setUploadedPDFs(data.pdf_documents);
-        console.log("Fetched PDF Documents:", data.pdf_documents);
+        const sortedPDFs = data.pdf_documents.sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        );
+        setUploadedPDFs(sortedPDFs);
+        console.log("Fetched PDF Documents:", sortedPDFs);
       } else {
         console.error("Failed to fetch uploaded PDFs", response);
       }
@@ -133,7 +136,7 @@ const DashboardForm = () => {
           const uploadResult = await uploadResponse.json();
 
           // Update uploadedPDFs to include the new PDF without refreshing
-          setUploadedPDFs((prevPDFs) => [...prevPDFs, uploadResult]);
+          setUploadedPDFs((prevPDFs) => [uploadResult, ...prevPDFs]);
 
           setSnackbarMessage("PDF uploaded and summarized successfully!");
         } else {
